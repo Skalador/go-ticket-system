@@ -1,0 +1,18 @@
+[
+    {
+		"subject": "Missing ID",
+		"description": "IDs should be added to tickets"
+	},
+	{
+		"subject": "Missing Severity",
+		"description": "Severity should be added to tickets"
+	},
+	{
+		"subject": "Missing Database interaction",
+		"description": "Database integration should be added"
+	},
+	{
+		"subject": "Containerize Applications",
+		"description": "Bring the entire structure in microservice architecture"
+	}
+]
