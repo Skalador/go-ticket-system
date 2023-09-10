@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket System</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Ticket System</h1>
+    </header>
+
+    <main>
+        <section id="ticket-form">
+            <h2>Submit a Ticket</h2>
+            <form>
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required>
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <section id="ticket-list">
+            <h2>Ticket List</h2>
+            <ul>
+                <!-- Example ticket list item -->
+                <li>
+                    <h3>Issue with Website</h3>
+                    <p>Website is not loading properly.</p>
+                </li>
+                <!-- Add more ticket list items here -->
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Ticket System</p>
+    </footer>
+</body>
+</html>

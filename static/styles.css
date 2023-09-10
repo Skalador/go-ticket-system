@@ -1,0 +1,101 @@
+/* Reset some default browser styles */
+body, h1, h2, h3, p, ul, form {
+    margin: 0;
+    padding: 0;
+}
+
+/* Apply a background color and set font styles for the entire page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Style the header section */
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Style the main content area */
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the ticket form section */
+#ticket-form {
+    margin-bottom: 30px;
+}
+
+#ticket-form h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form button[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+    background-color: #555;
+}
+
+/* Style the ticket list section */
+#ticket-list {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+#ticket-list h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Style the footer */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #555;
+}
