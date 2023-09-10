@@ -99,3 +99,14 @@ footer {
     margin-top: 20px;
     color: #555;
 }
+
+.delete-button {
+    color: #ff0000; /* Set the color to red */
+    cursor: pointer;
+    margin-right: 10px; /* Add spacing to separate the button from the subject */
+    background: transparent; /* Make the background transparent */
+    border: none; /* Remove the border */
+    padding: 0; /* Remove padding */
+    font-size: 1em; /* Set font size to inherit */
+    line-height: 1; /* Ensure line height is 1 to remove any extra spacing */
+}
