@@ -18,6 +18,16 @@
                 <label for="subject">Subject:</label>
                 <input type="text" id="subject" name="subject" required>
 
+                <label for="id">ID:</label>
+                <input type="text" id="id" name="id" required>
+
+                <label for="severity">Severity:</label>
+                <select id="severity" name="severity" required>
+                    <option value="sev3">Low (Severity 3)</option>
+                    <option value="sev2">Medium (Severity 2)</option>
+                    <option value="sev1">High (Severity 1)</option>
+                </select>
+
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" rows="4" required></textarea>
 
@@ -34,6 +44,8 @@
                         <input type="hidden" name="subject" value="{{.Subject}}">
                         <h3>{{.Subject}} <button type="delete" class="delete-button">❌</button> </h3>
                         <p>{{.Description}}</p>
+                        <p>ID:{{.ID}}</p>
+                        <p>Severity:{{.Severity}}</p>
                     </form>
                 </li>
                 {{end}}
