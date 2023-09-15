@@ -3,19 +3,19 @@
 		{
 			"Subject": "Improve UI design of Severity menu",
 			"Description": "The UI design of the dropdown menu doesn't fit the Submit button.",
-			"ID": "00001",
+			"ID": 0,
 			"Severity": "SEV4"
 		},
 		{
 			"Subject": "Improve Ticket List displaying option",
 			"Description": "The ID and Severity should be highlighted in the ticket list.",
-			"ID": "00002",
+			"ID": 1,
 			"Severity": "SEV4"
 		},
 		{
 			"Subject": "Containerize Applications",
 			"Description": "Bring the entire structure in microservice architecture",
-			"ID": "00003",
+			"ID": 2,
 			"Severity": "SEV3"
 		}
 	]
