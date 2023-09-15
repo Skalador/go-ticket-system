@@ -1,26 +1,28 @@
-[
-    {
-		"Subject": "Missing ID",
-		"Description": "IDs should be added to tickets",
-		"ID": "00001",
-		"Severity": "SEV4"
-	},
-	{
-		"Subject": "Missing Severity",
-		"Description": "Severity should be added to tickets",
-		"ID": "00002",
-		"Severity": "SEV4"
-	},
-	{
-		"Subject": "Missing Database interaction",
-		"Description": "Database integration should be added",
-		"ID": "00003",
-		"Severity": "SEV4"
-	},
-	{
-		"Subject": "Containerize Applications",
-		"Description": "Bring the entire structure in microservice architecture",
-		"ID": "00004",
-		"Severity": "SEV3"
-	}
-]
+{
+	"Tickets": [
+		{
+			"Subject": "Missing ID",
+			"Description": "IDs should be added to tickets",
+			"ID": "00001",
+			"Severity": "SEV4"
+		},
+		{
+			"Subject": "Missing Severity",
+			"Description": "Severity should be added to tickets",
+			"ID": "00002",
+			"Severity": "SEV4"
+		},
+		{
+			"Subject": "Missing Database interaction",
+			"Description": "Database integration should be added",
+			"ID": "00003",
+			"Severity": "SEV4"
+		},
+		{
+			"Subject": "Containerize Applications",
+			"Description": "Bring the entire structure in microservice architecture",
+			"ID": "00004",
+			"Severity": "SEV3"
+		}
+	]
+}

@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"text/template"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,11 +17,15 @@ import (
 const PORT = ":8000"
 const CONNECTIONSTRING = "mongodb+srv://kniederwanger:bat1OSclL7elzT0h@go-tickets.z7ats48.mongodb.net/"
 
+type Tickets struct {
+	Tickets []Ticket `json:"Tickets"`
+}
+
 type Ticket struct {
-	Subject string
-	Description string
-	ID string
-	Severity string
+	Subject string `json:"Subject"`
+	Description string `json:"Description"`
+	ID string `json:"ID"`
+	Severity string `json:"Severity"`
 }
 
 //create a slice of multiple tickets to display
@@ -138,7 +145,8 @@ func insertManyTickets(client *mongo.Client,tickets []Ticket) {
 
 func populateDB(client *mongo.Client, tickets []Ticket){
 	//Read all available Databases
-	dbs, err := client.ListDatabaseNames(context.TODO(),bson.D{})
+	filter :=bson.D{} //Access all
+	dbs, err := client.ListDatabaseNames(context.TODO(),filter)
 	godbExists := false
 	if err != nil {
 		panic(err)
@@ -156,6 +164,39 @@ func populateDB(client *mongo.Client, tickets []Ticket){
 		insertManyTickets(client,tickets)
 	}
 
+}
+
+func readAllTickets(client *mongo.Client, ticketsCache *Tickets) {
+	collection :=client.Database("godb").Collection("tickets") //access collection
+	filter :=bson.D{} //Access all
+	ctx := context.TODO()
+
+	cursor, err := collection.Find(ctx,filter)
+	if err != nil {
+		log.Fatal("Error finding data in collection")
+		panic(err)
+	}
+	defer cursor.Close(ctx)
+//	var data []bson.M
+//
+//	if err = cursor.All(ctx,&data); err != nil {
+//		log.Fatal("Error parsing data from database")
+//		panic(err)
+//	}
+//	log.Println(data)
+	for cursor.Next(ctx) {
+		var result Ticket
+		if err := cursor.Decode(&result); err != nil {
+			log.Println("Error decoding document:", err)
+			continue //Continue to the next document on error
+		}
+		// Append the retrieved Ticket to the Tickets slice in ticketsCache
+        ticketsCache.Tickets = append(ticketsCache.Tickets, result)
+	}
+
+//	for _,tt := range ticket {
+//		log.Println(cursor.Decode(&tt))
+//	}
 }
 
 func main() {
@@ -178,11 +219,29 @@ func main() {
 	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Err(); err != nil {
 	  panic(err)
 	}
-	log.Println("Pinged your deployment. You successfully connected to MongoDB!")
+	log.Println("Pinged your deployment, i.e. admin database. You successfully connected to MongoDB!")
 
-	populateDB(client,tickets)
-	//Todo: Read Data from database
-	// Remove ID field and handle it in the background
+
+	//Instantiate data and populate DB with sample data
+	jsonFile, err := os.Open("data.json")
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("Sucessfully opened data.json!")
+	defer jsonFile.Close()
+
+	var ticketsCache Tickets
+	byteValue, _ := io.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &ticketsCache)
+	populateDB(client,ticketsCache.Tickets)
+	ticketsCache=Tickets{} //clear cache to fill it with data from DB
+
+	//Read data from Database in cache
+	readAllTickets(client,&ticketsCache)
+	log.Println(ticketsCache.Tickets)
+
+	//Todo: Remove ID field and handle it in the background
+
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //Fileserver to load css
 	http.HandleFunc("/",rootHandler)
