@@ -41,7 +41,7 @@
                 {{range .}}
                 <li>
                     <form action="/delete" method="post">
-                        <input type="hidden" name="subject" value="{{.Subject}}">
+                        <input type="hidden" name="id" value="{{.ID}}">
                         <h3>{{.Subject}} <button type="delete" class="delete-button">❌</button> </h3>
                         <p>{{.Description}}</p>
                         <p>ID:{{.ID}}</p>

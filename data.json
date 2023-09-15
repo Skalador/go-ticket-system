@@ -1,27 +1,21 @@
 {
 	"Tickets": [
 		{
-			"Subject": "Missing ID",
-			"Description": "IDs should be added to tickets",
+			"Subject": "Improve UI design of Severity menu",
+			"Description": "The UI design of the dropdown menu doesn't fit the Submit button.",
 			"ID": "00001",
 			"Severity": "SEV4"
 		},
 		{
-			"Subject": "Missing Severity",
-			"Description": "Severity should be added to tickets",
+			"Subject": "Improve Ticket List displaying option",
+			"Description": "The ID and Severity should be highlighted in the ticket list.",
 			"ID": "00002",
-			"Severity": "SEV4"
-		},
-		{
-			"Subject": "Missing Database interaction",
-			"Description": "Database integration should be added",
-			"ID": "00003",
 			"Severity": "SEV4"
 		},
 		{
 			"Subject": "Containerize Applications",
 			"Description": "Bring the entire structure in microservice architecture",
-			"ID": "00004",
+			"ID": "00003",
 			"Severity": "SEV3"
 		}
 	]

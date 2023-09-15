@@ -28,36 +28,9 @@ type Ticket struct {
 	Severity string `json:"Severity"`
 }
 
-//create a slice of multiple tickets to display
-var tickets = []Ticket{ // Store submitted tickets in a global slice
-	{
-		Subject: "Missing ID",
-		Description: "IDs should be added to tickets",
-		ID: "00001",
-		Severity: "SEV4",
-	},
-	{
-		Subject: "Missing Severity",
-		Description: "Severity should be added to tickets",
-		ID: "00002",
-		Severity: "SEV4",
-	},
-	{
-		Subject: "Missing Database interaction",
-		Description: "Database integration should be added",
-		ID: "00003",
-		Severity: "SEV4",
-	},
-	{
-		Subject: "Containerize Applications",
-		Description: "Bring the entire structure in microservice architecture",
-		ID: "00004",
-		Severity: "SEV3",
-	},
-} 
 
 
-func addTicket(req *http.Request) {
+func addTicketToCacheAndDB(req *http.Request, client *mongo.Client, ticketsCache *Tickets) {
         // Handle form submission
         subject := req.FormValue("subject")
         description := req.FormValue("description")
@@ -70,70 +43,106 @@ func addTicket(req *http.Request) {
 			ID: id,
 			Severity: severity,
         }
-        tickets = append(tickets, newTicket)
-		log.Println("Added ticket with subject: ", subject)
+		ticketsCache.Tickets = append(ticketsCache.Tickets, newTicket)
+		insertOneTicket(client,newTicket)
+		log.Println("Added ticket with id: ", id)
 }
 
-func rootHandler(w http.ResponseWriter, req *http.Request) {
-	t,err := template.ParseFiles("index.html")
-	log.Println("Received request:", req)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+func deleteTicketFromCacheAndDB (req *http.Request, client *mongo.Client, ticketsCache *Tickets) {
+	id := req.FormValue("id")
+	log.Println("Deleting ticket with id:", id)
+	// Loop through the tickets and remove the one with the matching subject
+	for i, ticket := range ticketsCache.Tickets {
+		if ticket.ID == id {
+			ticketsCache.Tickets = append(ticketsCache.Tickets[:i], ticketsCache.Tickets[i+1:]...)
+			deleteOneTicket(client,ticket)
+			break
+		}
 	}
-
-	log.Println("Send response:", w)
-	t.Execute(w,tickets)
 }
 
-func deleteHandler(w http.ResponseWriter, req *http.Request) {
-	log.Println("Received request:", req)
-    if req.Method != http.MethodPost {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
+//Wrapper function for rootHandler
+func ticketRootHandler(ticketsCache *Tickets) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request)  {
+		t,err := template.ParseFiles("index.html")
+		log.Println("Received request:", req)
 
-    subject := req.FormValue("subject")
-	log.Println("Deleting ticket with subject:", subject)
-    // Loop through the tickets and remove the one with the matching subject
-    for i, ticket := range tickets {
-        if ticket.Subject == subject {
-            tickets = append(tickets[:i], tickets[i+1:]...)
-            break
-        }
-    }
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-    // Redirect back to the main page
-    http.Redirect(w, req, "/", http.StatusSeeOther)
+		log.Println("Send response:", w)
+		t.Execute(w,ticketsCache.Tickets)
+	}
 }
 
-func submitHandler(w http.ResponseWriter, req *http.Request) {
-	log.Println("Received request:", req)
-	if req.Method != http.MethodPost {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
 
-	addTicket(req)
 
-	// Redirect back to the main page
-    http.Redirect(w, req, "/", http.StatusSeeOther)
+//wrapper function for delete handler
+func ticketDeleteHandler(client *mongo.Client,ticketsCache *Tickets) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request)  {
+		log.Println("Received request:", req)
+		if req.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		deleteTicketFromCacheAndDB(req,client,ticketsCache)
+
+		// Redirect back to the main page
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+	}
 }
+
+
+//wrapper function for submit handler
+func ticketSubmitHandler(client *mongo.Client,ticketsCache *Tickets) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request)  {
+		log.Println("Received request:", req)
+		if req.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		addTicketToCacheAndDB(req, client, ticketsCache)
+
+		// Redirect back to the main page
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+	}
+}
+
 
 func insertOneTicket(client *mongo.Client,ticket Ticket) {
 	collection :=client.Database("godb").Collection("tickets") //access collection
-	result,err := collection.InsertOne(context.TODO(),tickets[0])
+	ctx := context.TODO()
+	result,err := collection.InsertOne(ctx,ticket)
 	log.Printf("Inserted document with _id: %v \n", result.InsertedID)
 	if err != nil {
 		panic(err)
 	}
 }
 
+func deleteOneTicket(client *mongo.Client,ticket Ticket) {
+	collection :=client.Database("godb").Collection("tickets") //access collection
+	ctx := context.TODO()
+	doc:=bson.D{{"id", ticket.ID}}
+	result, err := collection.DeleteOne(ctx, doc)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("Deleted %v document(s)\n", result.DeletedCount)
+}
+
 func insertManyTickets(client *mongo.Client,tickets []Ticket) {
 	collection :=client.Database("godb").Collection("tickets") //access collection
-	docs :=[]interface{}{tickets[0],tickets[1],tickets[2],tickets[3]}
-	result,err := collection.InsertMany(context.TODO(),docs)
+	docs :=[]interface{}{} 
+	// Iterate over the tickets and append each ticket to the docs slice
+	for _, ticket := range tickets {
+		docs = append(docs, ticket)
+	}
+	ctx := context.TODO()
+	result,err := collection.InsertMany(ctx,docs)
 	log.Printf("Documents inserted: %v\n", len(result.InsertedIDs))
 	for _, id := range result.InsertedIDs {
     	log.Printf("Inserted document with _id: %v\n", id)
@@ -146,7 +155,8 @@ func insertManyTickets(client *mongo.Client,tickets []Ticket) {
 func populateDB(client *mongo.Client, tickets []Ticket){
 	//Read all available Databases
 	filter :=bson.D{} //Access all
-	dbs, err := client.ListDatabaseNames(context.TODO(),filter)
+	ctx := context.TODO()
+	dbs, err := client.ListDatabaseNames(ctx,filter)
 	godbExists := false
 	if err != nil {
 		panic(err)
@@ -177,14 +187,8 @@ func readAllTickets(client *mongo.Client, ticketsCache *Tickets) {
 		panic(err)
 	}
 	defer cursor.Close(ctx)
-//	var data []bson.M
-//
-//	if err = cursor.All(ctx,&data); err != nil {
-//		log.Fatal("Error parsing data from database")
-//		panic(err)
-//	}
-//	log.Println(data)
-	for cursor.Next(ctx) {
+
+	for cursor.Next(ctx) { //iterate through the data
 		var result Ticket
 		if err := cursor.Decode(&result); err != nil {
 			log.Println("Error decoding document:", err)
@@ -193,10 +197,6 @@ func readAllTickets(client *mongo.Client, ticketsCache *Tickets) {
 		// Append the retrieved Ticket to the Tickets slice in ticketsCache
         ticketsCache.Tickets = append(ticketsCache.Tickets, result)
 	}
-
-//	for _,tt := range ticket {
-//		log.Println(cursor.Decode(&tt))
-//	}
 }
 
 func main() {
@@ -238,15 +238,15 @@ func main() {
 
 	//Read data from Database in cache
 	readAllTickets(client,&ticketsCache)
-	log.Println(ticketsCache.Tickets)
 
 	//Todo: Remove ID field and handle it in the background
 
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //Fileserver to load css
-	http.HandleFunc("/",rootHandler)
-	http.HandleFunc("/submit", submitHandler)
-	http.HandleFunc("/delete", deleteHandler)
+	//Use wrapper functions for all handlers, to transfer data without global variables
+	http.HandleFunc("/",ticketRootHandler(&ticketsCache))
+	http.HandleFunc("/submit", ticketSubmitHandler(client,&ticketsCache))
+	http.HandleFunc("/delete", ticketDeleteHandler(client,&ticketsCache))
     log.Println("Listing for requests at http://localhost:8000/")
 	log.Fatal(http.ListenAndServe(PORT, nil))
 }
