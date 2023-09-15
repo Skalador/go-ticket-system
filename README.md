@@ -9,7 +9,9 @@ The backend database is `MongoDB`. MongoDB is hosted for free on Atlas. The Data
 On first startup the `MongoDB` will be checked for a database called `godb`. If this database does not exist, then the database will be created and populated with the data from `data.json`.
 
 ## Demo
-![](https://github.com/Skalador/go-ticket-system/demo.mp4)
+https://github.com/Skalador/go-ticket-system/assets/117681263/0d5273fb-34c6-4f5f-be18-02c6425300ba
+
+
 
 ## Prerequisites
 Installing the mongoDB driver:
@@ -27,7 +29,7 @@ Linux: export MONGODB_CONNECTION_STRING="mongodb+srv://username:password@databas
 ```
 
 Run the code:
-``
+```
 go run main.go
 ```
 
