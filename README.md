@@ -8,6 +8,9 @@ The ticket system utilizes the `net/http` package and a templating engine `html/
 The backend database is `MongoDB`. MongoDB is hosted for free on Atlas. The Data can be visualized with `MongoDBCompass`.
 On first startup the `MongoDB` will be checked for a database called `godb`. If this database does not exist, then the database will be created and populated with the data from `data.json`.
 
+## Demo
+![](https://github.com/Skalador/go-ticket-system/demo.mp4)
+
 ## Prerequisites
 Installing the mongoDB driver:
 ```
