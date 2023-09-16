@@ -34,13 +34,13 @@ func setTestWorkingDirectory(t *testing.T) func() {
 }
 
 func TestTicketRootHandler(t *testing.T) {
-	// Create a mock Tickets object
-	var ticketsCache models.Tickets
-	models.InitTicketsCache(&ticketsCache)
-
 	// Set the test working directory and defer cleanup
 	resetWorkingDirectory := setTestWorkingDirectory(t)
 	defer resetWorkingDirectory()
+
+	// Create a mock Tickets object
+	var ticketsCache models.Tickets
+	models.InitTicketsCache(&ticketsCache)
 
 	// Create a request
 	req, err := http.NewRequest(http.MethodGet, "/", nil)

@@ -2,6 +2,7 @@ package db
 
 import (
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/Skalador/go-ticket-system/models"
@@ -9,11 +10,39 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
+func setTestWorkingDirectory(t *testing.T) func() {
+	t.Helper()
+
+	// Get the current working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	// Change the working directory to the root of the project
+	err = os.Chdir("../")
+	if err != nil {
+		t.Fatalf("Failed to change working directory: %v", err)
+	}
+
+	// Return a cleanup function to reset the working directory
+	return func() {
+		err := os.Chdir(wd)
+		if err != nil {
+			t.Fatalf("Failed to reset working directory: %v", err)
+		}
+	}
+}
+
 // TestAddTicketToCacheAndDB tests the AddTicketToCacheAndDB function.
 func TestAddTicketToCacheAndDB(t *testing.T) {
 	// Create a mock MongoDB client
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	defer mt.Close()
+
+	// Set the test working directory and defer cleanup
+	resetWorkingDirectory := setTestWorkingDirectory(t)
+	defer resetWorkingDirectory()
 
 	// Create a mock TicketsCache
 	var ticketsCache models.Tickets
@@ -41,6 +70,10 @@ func TestDeleteTicketFromCacheAndDB(t *testing.T) {
 	// Create a mock MongoDB client
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	defer mt.Close()
+
+	// Set the test working directory and defer cleanup
+	resetWorkingDirectory := setTestWorkingDirectory(t)
+	defer resetWorkingDirectory()
 
 	// Create a mock TicketsCache
 	var ticketsCache models.Tickets

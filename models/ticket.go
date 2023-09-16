@@ -19,7 +19,7 @@ type Ticket struct {
 }
 
 func InitTicketsCache(ticketsCache *Tickets) {
-	jsonFile, err := os.Open("../data.json")
+	jsonFile, err := os.Open("data.json")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
