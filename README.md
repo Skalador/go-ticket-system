@@ -17,6 +17,8 @@ https://github.com/Skalador/go-ticket-system/assets/117681263/0d5273fb-34c6-4f5f
 Installing the mongoDB driver:
 ```
 go get go.mongodb.org/mongo-driver/mongo
+go get go.mongodb.org/mongo-driver/mongo/integration/mtest
+go get github.com/stretchr/testify/assert
 ```
 
 ## Execute the code
@@ -31,6 +33,18 @@ Linux: export MONGODB_CONNECTION_STRING="mongodb+srv://username:password@databas
 Run the code:
 ```
 go run main.go
+```
+
+## Run tests
+
+Running all tests:
+```
+go test ./...
+```
+
+Testing specific packages:
+```
+go test ./handlers
 ```
 
 ## Known issues

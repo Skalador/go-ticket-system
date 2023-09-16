@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InitDB(CONNECTIONSTRING string) (*mongo.Client,error) {
+func InitDB(CONNECTIONSTRING string) (*mongo.Client, error) {
 	// Use the SetServerAPIOptions() method to set the Stable API version to 1
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(CONNECTIONSTRING).SetServerAPIOptions(serverAPI)
@@ -31,17 +31,17 @@ func InitDB(CONNECTIONSTRING string) (*mongo.Client,error) {
 	return client, nil
 }
 
-func findMaxID(ticketsCache *models.Tickets) int{
+func findMaxID(ticketsCache *models.Tickets) int {
 	if len(ticketsCache.Tickets) == 0 {
 		return 0
 	}
 
 	max := ticketsCache.Tickets[0].ID
-	for _,ticket := range ticketsCache.Tickets {
+	for _, ticket := range ticketsCache.Tickets {
 		if ticket.ID > max {
 			max = ticket.ID
 		}
-	} 
+	}
 
 	return max
 }
@@ -50,51 +50,51 @@ func AddTicketToCacheAndDB(req *http.Request, client *mongo.Client, ticketsCache
 	// Handle form submission
 	subject := req.FormValue("subject")
 	description := req.FormValue("description")
-	id := findMaxID(ticketsCache)+1
+	id := findMaxID(ticketsCache) + 1
 	severity := req.FormValue("severity")
 	// Create a new ticket and add it to the list
 	newTicket := models.Ticket{
 		Subject:     subject,
 		Description: description,
-		ID: id,
-		Severity: severity,
+		ID:          id,
+		Severity:    severity,
 	}
 	ticketsCache.Tickets = append(ticketsCache.Tickets, newTicket)
-	insertOneTicket(client,newTicket)
+	insertOneTicket(client, newTicket)
 	log.Println("Added ticket with id: ", id)
 }
 
 func obtainIDFromRequest(req *http.Request) int {
-idStr := req.FormValue("id")
-id, err := strconv.Atoi(idStr)
-if err != nil {
-	log.Fatal("Error converting ID to integer:", err)
-	panic(err)
-}
-return id
+	idStr := req.FormValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Fatal("Error converting ID to integer:", err)
+		panic(err)
+	}
+	return id
 }
 
-func DeleteTicketFromCacheAndDB (req *http.Request, client *mongo.Client, ticketsCache *models.Tickets) {
-id := obtainIDFromRequest(req)
-log.Println("Deleting ticket with id:", id)
-// Loop through the tickets and remove the one with the matching subject
-for i, ticket := range ticketsCache.Tickets {
-	if ticket.ID == id {
-		ticketsCache.Tickets = append(ticketsCache.Tickets[:i], ticketsCache.Tickets[i+1:]...)
-		deleteOneTicket(client,ticket)
-		break
+func DeleteTicketFromCacheAndDB(req *http.Request, client *mongo.Client, ticketsCache *models.Tickets) {
+	id := obtainIDFromRequest(req)
+	log.Println("Deleting ticket with id:", id)
+	// Loop through the tickets and remove the one with the matching subject
+	for i, ticket := range ticketsCache.Tickets {
+		if ticket.ID == id {
+			ticketsCache.Tickets = append(ticketsCache.Tickets[:i], ticketsCache.Tickets[i+1:]...)
+			deleteOneTicket(client, ticket)
+			break
+		}
 	}
-}
 }
 
 func insertOneTicket(client *mongo.Client, ticket models.Ticket) {
 	collection := client.Database("godb").Collection("tickets") //access collection
 	ctx := context.TODO()
 	result, err := collection.InsertOne(ctx, ticket)
-	log.Printf("Inserted document with _id: %v \n", result.InsertedID)
 	if err != nil {
-		panic(err)
+		log.Fatal("Inserting one ticket failed! ", err.Error())
 	}
+	log.Printf("Inserted document with _id: %v \n", result.InsertedID)
 }
 
 func deleteOneTicket(client *mongo.Client, ticket models.Ticket) {
@@ -103,7 +103,7 @@ func deleteOneTicket(client *mongo.Client, ticket models.Ticket) {
 	doc := bson.D{{"id", ticket.ID}}
 	result, err := collection.DeleteOne(ctx, doc)
 	if err != nil {
-		panic(err)
+		log.Fatal("Deleting one ticket failed! ", err.Error())
 	}
 	log.Printf("Deleted %v document(s)\n", result.DeletedCount)
 }
@@ -122,7 +122,7 @@ func insertManyTickets(client *mongo.Client, tickets []models.Ticket) {
 		log.Printf("Inserted document with _id: %v\n", id)
 	}
 	if err != nil {
-		panic(err)
+		log.Fatal("Inserting many tickets failed! ", err.Error())
 	}
 }
 
@@ -158,7 +158,6 @@ func ReadAllTickets(client *mongo.Client, ticketsCache *models.Tickets) {
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Fatal("Error finding data in collection")
-		panic(err)
 	}
 	defer cursor.Close(ctx)
 

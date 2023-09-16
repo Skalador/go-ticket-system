@@ -10,10 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-//Wrapper function for rootHandler
+// Wrapper function for rootHandler
 func TicketRootHandler(ticketsCache *models.Tickets) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, req *http.Request)  {
-		t,err := template.ParseFiles("index.html")
+	return func(w http.ResponseWriter, req *http.Request) {
+		t, err := template.ParseFiles("index.html")
 		log.Println("Received request:", req)
 
 		if err != nil {
@@ -22,14 +22,13 @@ func TicketRootHandler(ticketsCache *models.Tickets) func(http.ResponseWriter, *
 		}
 
 		log.Println("Send response:", w)
-		t.Execute(w,ticketsCache.Tickets)
+		t.Execute(w, ticketsCache.Tickets)
 	}
 }
 
-
-//wrapper function for delete handler
-func TicketDeleteHandler(client *mongo.Client,ticketsCache *models.Tickets) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, req *http.Request)  {
+// wrapper function for delete handler
+func TicketDeleteHandler(client *mongo.Client, ticketsCache *models.Tickets) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
 		log.Println("Received request:", req)
 		if req.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -43,10 +42,9 @@ func TicketDeleteHandler(client *mongo.Client,ticketsCache *models.Tickets) func
 	}
 }
 
-
-//wrapper function for submit handler
-func TicketSubmitHandler(client *mongo.Client,ticketsCache *models.Tickets) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, req *http.Request)  {
+// wrapper function for submit handler
+func TicketSubmitHandler(client *mongo.Client, ticketsCache *models.Tickets) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
 		log.Println("Received request:", req)
 		if req.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
