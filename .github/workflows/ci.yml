@@ -8,9 +8,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.0'
     - name: Run Unit Tests
-      run: go test
+      run: go test ./...
       
   push_to_registry:
     name: Push Docker image to Docker Hub
