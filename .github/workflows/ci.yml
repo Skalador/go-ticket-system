@@ -1,4 +1,4 @@
-name: Publish Docker image to Docker Hub
+name: Build, Test and publish to Dockerhub
 
 on:
   push:
@@ -36,3 +36,12 @@ jobs:
           context: .
           push: true
           tags: skalador/go-ticket-system:latest
+          
+      - name: Generate Software Bill of Materials 
+        uses: anchore/sbom-action@v0.14.3
+        with: 
+          image: skalador/go-ticket-system:latest
+          format: spdx-json
+          artifact-name: sbom.spdx.json
+          upload-artifact: true
+        
