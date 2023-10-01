@@ -12,8 +12,6 @@ On first startup the `MongoDB` will be checked for a database called `godb`. If 
 https://github.com/Skalador/go-ticket-system/assets/117681263/87319c17-65a8-4ea1-a464-2d8f3b43c779
 
 
-
-
 ## Prerequisites
 Installing the mongoDB driver:
 ```
@@ -22,7 +20,6 @@ go get go.mongodb.org/mongo-driver/mongo/integration/mtest
 go get github.com/stretchr/testify/assert
 ```
 
-## Execute the code
 An environment variable `MONGODB_CONNECTION_STRING` is used for the database connectivity, thus the connection string is not exposed in the code itself.
 
 Expose the variable:
@@ -30,6 +27,8 @@ Expose the variable:
 Windows: $env:MONGODB_CONNECTION_STRING = 'mongodb+srv://username:password@database/'
 Linux: export MONGODB_CONNECTION_STRING="mongodb+srv://username:password@database/"
 ```
+
+## Execute the code
 
 Run the code:
 ```
@@ -46,6 +45,20 @@ go test ./...
 Testing specific packages:
 ```
 go test ./handlers
+```
+
+## Build the container image
+
+Build the image with the `latest` tag
+```
+docker build -t go-ticket-system .
+```
+
+## Run the container image
+
+Run the image with `docker` and use the environment variable `MONGODB_CONNECTION_STRING` 
+```
+docker run  -e "MONGODB_CONNECTION_STRING=$MONGODB_CONNECTION_STRING" -p 8000:8000 go-ticket-system
 ```
 
 ## Known issues
